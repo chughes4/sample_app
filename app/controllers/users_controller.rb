@@ -3,17 +3,12 @@ class UsersController < ApplicationController
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: :destroy
   
-  # def index
-  #   @users = User.all
-  # end 
-  def index 
-    #@users = User.paginate(page: params[:page])
-     @users = User.where(activated: true).paginate(page: params[:page])
-  end
+  def index
+    @users = User.all
+  end 
  
   def show
     @user = User.find(params[:id])
-    redirect_to root_url and return unless @user.activated?
   end
   
   def new
@@ -25,7 +20,7 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.account_activation(@user).deliver_now
       flash[:info] = "Check your email to activate"
-      redirect_to root_url
+      redirect_to #root_url
     else
       render 'new'
     end 
@@ -45,21 +40,14 @@ class UsersController < ApplicationController
     end 
   end
   
+  def index 
+    @users = User.paginate(page: params[:page])
+  end
+  
   def destroy
     User.find(params[:id]).destroy
     flash[:success] = "User deleted"
     redirect_to users_url
-  end 
-  
-  def create
-    @user = User.new(user_params)
-    if @user.save
-      @user.send_activation_email
-      flash[:info] = "Please check your email to activate your account."
-      redirect_to root_url
-    else
-      render 'new'
-    end
   end 
   
   private
